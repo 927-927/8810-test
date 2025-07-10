@@ -2,43 +2,117 @@ package frc.robot.subsystem;
 
 import java.security.AlgorithmParameterGenerator;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase{
     private final TalonFX armmotor;
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
+    private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
-    public ArmSubsystem(CANBus canBus) {
+    private double setpoint;
+    private final BaseStatusSignal positionSignal;
+    private MotorOutputConfigs armconfig = new MotorOutputConfigs();
+    public ArmSubsystem(CANBus canBus,double setpoint) {
         this.armmotor = new TalonFX(20,canBus);
+        armconfig.Inverted = InvertedValue.Clockwise_Positive;
+        armmotor.getConfigurator().apply(armconfig);
+        this.positionSignal = armmotor.getRotorPosition();
         var armslot0 = new Slot0Configs();
         armslot0.kS = 0.0;
         armslot0.kV = 0.0;
         armslot0.kA = 0.0;
-        armslot0.kP = 0.0;
+        armslot0.kP = 0.5;
         armslot0.kI = 0.0;
         armslot0.kD = 0.0;
         armmotor.getConfigurator().apply(armslot0);
         armmotor.setControl(armcontrol);
         armmotor.setNeutralMode(NeutralModeValue.Brake);
+        this.setpoint = setpoint;
+        armmotor.setPosition(0);
     }
-    public void setpos(double deg)
+    //encoder readings 
+    private double getencoderval()
     {
-        final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-        double rot = deg*(58.33)/360;
-        armmotor.setControl(m_request.withPosition(rot));
+        double value = positionSignal.getValueAsDouble();
+        return value;
+    } 
+    public double getdegree()
+    {
+        double value = positionSignal.getValueAsDouble();
+        double degree = value/58.33*360;
+        return degree;
     }
 
+
+
+
+    //set voltage
     public void setV(double voltage)
     {
         armcontrol.Output = voltage;
         armmotor.setControl(armcontrol);
+    }
+    //arm manual iline command
+    public Command armmanual(double voltage)
+    {
+        return this.startEnd(
+            () -> setV(voltage),
+            () -> setV(0.0)
+            );
+    }
+
+
+
+
+    //pid setcontrol
+    public void movetoheight()
+    {
+        double target = this.setpoint-this.getdegree();
+        SmartDashboard.putNumber("deltadegree", target);
+        double rot = target*(58.33)/360;
+        armmotor.setControl(request.withPosition(rot));
+    }
+    //pid height setting
+    public Command setangle(double angle)
+    {
+        return this.runOnce(() -> {
+            this.setpoint = angle;
+            movetoheight();
+        });
+    }
+    
+    //pid inline command
+    public Command armPID()
+    {
+        return this.runOnce(() -> movetoheight());
+    }
+
+
+
+
+
+
+
+    //periodic
+    @Override
+    public void periodic()
+    {
+        BaseStatusSignal.refreshAll(positionSignal);
+        SmartDashboard.putNumber("arm angle", this.getdegree());
     }
 }
 

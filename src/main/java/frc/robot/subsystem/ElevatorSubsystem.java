@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase{
@@ -19,40 +20,38 @@ public class ElevatorSubsystem extends SubsystemBase{
     private final TalonFX elemotor2;
     private final double dia = 38.2*Math.PI;
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
-    final DutyCycleOut elecontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
-    final PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
+    private DutyCycleOut elecontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
+    private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     private final BaseStatusSignal positionSignal;
+    private double setpoint;
+    private double temp;
     
-    public ElevatorSubsystem(CANBus CAN,double curlimit)
+    public ElevatorSubsystem(CANBus CAN,double curlimit,double setpoint)
     {
+        // motor definition
         this.elemotor1 = new TalonFX(8,CAN);
         this.elemotor2 = new TalonFX(9,CAN);
-        currentConfig.StatorCurrentLimitEnable = false;
-        currentConfig.StatorCurrentLimit = curlimit;
-        elemotor1.getConfigurator().apply(currentConfig);
-        elemotor2.getConfigurator().apply(currentConfig);
+        this.setpoint = setpoint;
+        this.positionSignal = elemotor1.getRotorPosition();
+        //break mode
         elemotor1.setNeutralMode(NeutralModeValue.Brake);
         elemotor2.setNeutralMode(NeutralModeValue.Brake);
-        
+        // pid constants
         var elevatorslot0 = new Slot0Configs()
         .withKA(0)
         .withKD(0)
         .withKG(0)
         .withKI(0)
-        .withKP(0.5)
+        .withKP(0.7)
         .withKS(0)
         .withKV(0);
         elemotor1.getConfigurator().apply(elevatorslot0);
         elemotor2.getConfigurator().apply(elevatorslot0);
+        //foller talon
         elemotor2.setControl(new Follower(elemotor1.getDeviceID(), true));
-        this.positionSignal = elemotor1.getRotorPosition();
-    }
-    public void setV(double voltage)
-    {
-        elecontrol.Output = voltage;
-        elemotor1.setControl(elecontrol);
-        
-    }
+        this.elemotor1.setPosition(0);
+    } 
+    //encoder readings
     private double getencoderval()
     {
         double value = positionSignal.getValueAsDouble();
@@ -64,29 +63,69 @@ public class ElevatorSubsystem extends SubsystemBase{
         double height = value/4.5*dia;
         return height;
     }
-    public void movetoheight(double setpoint)
-    {
-        double target = setpoint-this.getheight();
-        SmartDashboard.putNumber("deltaheight", target);
-        double rot = target/dia*4.5;
-        SmartDashboard.putNumber("target rotation", rot);
-        elemotor1.setControl(request.withPosition(rot));
-    }
-    public boolean reached(double pos)
-    {
-        if(Math.abs(pos-this.getheight())<=2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+
+
+
+
+    //reset condition
     public void resetencoder()
     {
         this.elemotor1.setPosition(0);
     }
+
+
+
+
+    //motor voltage
+    public void setV(double voltage)
+    {
+        elecontrol.Output = voltage;
+        elemotor1.setControl(elecontrol);
+        
+    }
+    //manual inline command
+    public Command elevatormanual(double voltage)
+    {
+        return this.startEnd(
+        () -> setV(voltage),
+        () -> setV(0));
+        
+    }
+
+
+
+
+    //pid setcontrol
+    public void movetoheight()
+    {
+        double target = this.setpoint-this.getheight();
+        SmartDashboard.putNumber("deltaheight", target);
+        double rot = setpoint/dia*4.5;
+        SmartDashboard.putNumber("target rotation", rot);
+        elemotor1.setControl(request.withPosition(rot));
+    }
+    //pid height setting
+    public Command setheight(double height)
+    {
+        return this.runOnce(() -> {
+            this.setpoint = height;
+            movetoheight();
+        });
+    }
+    
+    //pid inline command
+    public Command elevatorPID()
+    {
+        return this.runOnce(() -> movetoheight());
+    }
+
+
+
+
+
+
+
+    //periodic
     @Override
     public void periodic()
     {
