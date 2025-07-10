@@ -41,7 +41,7 @@ public class ElevatorSubsystem extends SubsystemBase{
         .withKD(0)
         .withKG(0)
         .withKI(0)
-        .withKP(0.7)
+        .withKP(0.2)
         .withKS(0)
         .withKV(0);
         elemotor1.getConfigurator().apply(elevatorslot0);
@@ -97,10 +97,8 @@ public class ElevatorSubsystem extends SubsystemBase{
     //pid setcontrol
     public void movetoheight()
     {
-        double target = this.setpoint-this.getheight();
-        SmartDashboard.putNumber("deltaheight", target);
-        double rot = target/dia*4.5;
-        SmartDashboard.putNumber("target rotation", rot);
+        double rot = this.setpoint/dia*4.5;
+        SmartDashboard.putNumber("elevator setpoint", this.setpoint);
         elemotor1.setControl(request.withPosition(rot));
     }
     //pid height setting

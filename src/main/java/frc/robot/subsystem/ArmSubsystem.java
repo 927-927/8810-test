@@ -35,7 +35,7 @@ public class ArmSubsystem extends SubsystemBase{
         armslot0.kS = 0.0;
         armslot0.kV = 0.0;
         armslot0.kA = 0.0;
-        armslot0.kP = 0.5;
+        armslot0.kP = 0.4;
         armslot0.kI = 0.0;
         armslot0.kD = 0.0;
         armmotor.getConfigurator().apply(armslot0);
@@ -81,9 +81,8 @@ public class ArmSubsystem extends SubsystemBase{
     //pid setcontrol
     public void movetoheight()
     {
-        double target = this.setpoint-this.getdegree();
-        SmartDashboard.putNumber("deltadegree", target);
-        double rot = target*(58.33)/360;
+        double rot = (this.setpoint)*(58.33)/360;
+        SmartDashboard.putNumber("arm setpoint", this.setpoint);
         armmotor.setControl(request.withPosition(rot));
     }
     //pid height setting

@@ -36,12 +36,10 @@ public class RobotContainer {
   }
   private void configureBindings() 
   {
-      joystick.b().whileTrue(armSubsystem.setangle(80));
-      joystick.x().onTrue(elevatorSubsystem.setheight(2000));
-      joystick.y().onTrue(elevatorSubsystem.setheight(1000));
-      joystick.rightBumper().onTrue(elevatorSubsystem.setheight(0));
-      joystick.a().whileTrue(armSubsystem.setangle(0));
-  }
+      joystick.a().whileTrue(elevatorSubsystem.setheight(100));
+      joystick.b().whileTrue(armSubsystem.setangle(3));
+
+  } 
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
