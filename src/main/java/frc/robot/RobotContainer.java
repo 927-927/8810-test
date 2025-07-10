@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,14 +15,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ArmManual;
 import frc.robot.commands.ElevatorManual;
 import frc.robot.commands.ElevatorPIDtest;
+import frc.robot.commands.IntakeManual;
 import frc.robot.subsystem.ArmSubsystem;
 import frc.robot.subsystem.ElevatorSubsystem;
+import frc.robot.subsystem.IntakeSubsystem;
 
 public class RobotContainer {
   
   public final CANBus maincanbus = new CANBus("mainCAN");
   private final ArmSubsystem armSubsystem = new ArmSubsystem (maincanbus);
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(maincanbus,5);
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(maincanbus);
   public final Joystick joystick1 = new Joystick(3);  
   public RobotContainer() {
     configureBindings();
@@ -30,10 +34,15 @@ public class RobotContainer {
   }
   private void configureBindings() 
   {
-    new Trigger(() -> joystick1.getRawButton(3)).whileTrue(new ElevatorPIDtest(elevatorSubsystem, 100));
+    new Trigger(() -> joystick1.getRawButton(3)).whileTrue(new IntakeManual(intakeSubsystem, 0.5));
+    new Trigger(() -> joystick1.getRawButton(4)).whileTrue(new IntakeManual(intakeSubsystem, -0.5));
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  public ElevatorSubsystem getElevatorSubsystem() {
+    return elevatorSubsystem;
   }
 }

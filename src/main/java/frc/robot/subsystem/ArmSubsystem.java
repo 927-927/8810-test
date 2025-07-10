@@ -16,7 +16,7 @@ public class ArmSubsystem extends SubsystemBase{
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
     final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
     public ArmSubsystem(CANBus canBus) {
-        this.armmotor = new TalonFX(0,canBus);
+        this.armmotor = new TalonFX(20,canBus);
         var armslot0 = new Slot0Configs();
         armslot0.kS = 0.0;
         armslot0.kV = 0.0;
@@ -25,6 +25,7 @@ public class ArmSubsystem extends SubsystemBase{
         armslot0.kI = 0.0;
         armslot0.kD = 0.0;
         armmotor.getConfigurator().apply(armslot0);
+        armmotor.setControl(armcontrol);
         armmotor.setNeutralMode(NeutralModeValue.Brake);
     }
     public void setpos(double deg)

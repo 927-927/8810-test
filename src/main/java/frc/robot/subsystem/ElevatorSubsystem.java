@@ -11,7 +11,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,14 +25,15 @@ public class ElevatorSubsystem extends SubsystemBase{
     
     public ElevatorSubsystem(CANBus CAN,double curlimit)
     {
-        this.elemotor1 = new TalonFX(9,CAN);
-        this.elemotor2 = new TalonFX(10,CAN);
+        this.elemotor1 = new TalonFX(8,CAN);
+        this.elemotor2 = new TalonFX(9,CAN);
         currentConfig.StatorCurrentLimitEnable = false;
         currentConfig.StatorCurrentLimit = curlimit;
         elemotor1.getConfigurator().apply(currentConfig);
         elemotor2.getConfigurator().apply(currentConfig);
         elemotor1.setNeutralMode(NeutralModeValue.Brake);
         elemotor2.setNeutralMode(NeutralModeValue.Brake);
+        
         var elevatorslot0 = new Slot0Configs()
         .withKA(0)
         .withKD(0)
@@ -44,7 +44,6 @@ public class ElevatorSubsystem extends SubsystemBase{
         .withKV(0);
         elemotor1.getConfigurator().apply(elevatorslot0);
         elemotor2.getConfigurator().apply(elevatorslot0);
-
         elemotor2.setControl(new Follower(elemotor1.getDeviceID(), true));
         this.positionSignal = elemotor1.getRotorPosition();
     }
