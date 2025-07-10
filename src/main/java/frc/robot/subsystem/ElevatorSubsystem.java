@@ -24,7 +24,6 @@ public class ElevatorSubsystem extends SubsystemBase{
     private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     private final BaseStatusSignal positionSignal;
     private double setpoint;
-    private double temp;
     
     public ElevatorSubsystem(CANBus CAN,double curlimit,double setpoint)
     {
@@ -100,7 +99,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     {
         double target = this.setpoint-this.getheight();
         SmartDashboard.putNumber("deltaheight", target);
-        double rot = setpoint/dia*4.5;
+        double rot = target/dia*4.5;
         SmartDashboard.putNumber("target rotation", rot);
         elemotor1.setControl(request.withPosition(rot));
     }
