@@ -9,25 +9,32 @@ import frc.robot.generated.TunerConstants;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
 
+
 public class Candle extends SubsystemBase {
     CANdle candle;
-    SolidColor color;
 
     public Candle(int deviceId) {
         candle = new CANdle(deviceId, TunerConstants.kCANBus);
     }
 
-    public void ColorGenerate(int startIdx, int endIdx, String hexCode) {
-        this.color = new SolidColor(startIdx, endIdx);
+    public SolidColor ColorGenerate(int startIdx, int endIdx, String hexCode) {
+        SolidColor color = new SolidColor(startIdx, endIdx);
         Color8Bit hexColor = new Color8Bit(hexCode);
         RGBWColor colorRGBValue = new RGBWColor(hexColor);
-        this.color.Color = colorRGBValue;
-        this.color.withUpdateFreqHz(1000); 
-        this.color.withColor(colorRGBValue);
+        color.Color = colorRGBValue;
+        color.withUpdateFreqHz(1000); 
+        color.withColor(colorRGBValue);
+        return color;
     }
 
-    public void setColor() {
-        this.ColorGenerate(0, 30, "#87254a");
-        candle.setControl(this.color);
+    // public void ColorFlowGenerate(int startIdx, int endIdx, String hexCode, int slot) {
+
+    //     Color8Bit hexColor = new Color8Bit(hexCode);
+    //     RGBWColor colorRGBValue = new RGBWColor(hexColor);
+        
+    // }
+
+    public void setColor(SolidColor color) {
+        candle.setControl(color);
     }
 }
