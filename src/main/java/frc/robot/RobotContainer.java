@@ -111,7 +111,7 @@ public class RobotContainer {
         joystick.povLeft().whileTrue(intakeSubsystem.intakeManual(-0.6));
         joystick.povRight().whileTrue(intakeSubsystem.intakeManual(1.0));
         joystick.leftBumper().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
-        
+        joystick.leftTrigger().onTrue(macro.elepidtune.andThen(macro.changestate(StateEnum.NONE)));
 
 
 

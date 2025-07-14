@@ -37,8 +37,8 @@ public class ArmSubsystem extends SubsystemBase{
         armslot0.kS = 0.0;
         armslot0.kV = 0.0;
         armslot0.kA = 0.0;
-        armslot0.kP = 0.5;
-        armslot0.kI = 0.0;
+        armslot0.kP = 0.6;
+        armslot0.kI = 0.1;
         armslot0.kD = 0.0;
         armmotor.getConfigurator().apply(armslot0);
         armmotor.setControl(armcontrol);

@@ -40,8 +40,8 @@ public class ElevatorSubsystem extends SubsystemBase{
         .withKA(0)
         .withKD(0)
         .withKG(0)
-        .withKI(0)
-        .withKP(0.3)
+        .withKI(0.06)
+        .withKP(0.51)
         .withKS(0)
         .withKV(0);
         elemotor1.getConfigurator().apply(elevatorslot0);
