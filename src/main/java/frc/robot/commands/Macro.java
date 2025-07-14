@@ -1,0 +1,241 @@
+package frc.robot.commands;
+
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.enums.StateEnum;
+import frc.robot.subsystems.*;
+public class Macro {
+    //teleop key binding
+        //coral
+        //L3 550
+        //L4 1170
+        //L2  deg 100 ele
+        //L1 110 deg 500
+        //algae
+        //L2 85deg 430 ele
+        //L3 85deg 830ele
+        //score -30deg 1430ele
+        //ground 126deg 133ele
+    private ElevatorSubsystem elevator;
+    private ArmSubsystem arm;
+    private IntakeSubsystem intake;
+    public StateEnum curState = StateEnum.NONE;
+    public Command coralL1, coralL2, coralL3, coralL4;
+    public Command algaeground, algaeL2, algaeL3, processor, barge, home;
+    public Macro(ElevatorSubsystem elevatorSubsystem,ArmSubsystem armSubsystem,IntakeSubsystem intakeSubsystem)
+    {
+        this.elevator = elevatorSubsystem;
+        this.arm = armSubsystem;
+        this.intake = intakeSubsystem;
+
+        coralL1 = Commands.sequence(
+            arm.setangle(110),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(500)
+        );
+
+        coralL2 = Commands.sequence(
+            arm.setangle(30),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(100)
+        );
+
+        coralL3 = Commands.sequence(
+            arm.setangle(30),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(550)
+        );
+
+        coralL4 = Commands.sequence(
+            arm.setangle(30),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(1170)
+        );
+
+        algaeground = Commands.sequence(
+            arm.setangle(126),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(133)
+        );
+
+        algaeL2 = Commands.sequence(
+            arm.setangle(85),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(430)
+        );
+
+        algaeL3 = Commands.sequence(
+            arm.setangle(85),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(830)
+        );
+
+        processor = Commands.sequence(
+            arm.setangle(85),
+            new WaitUntilCommand(() -> arm.getdegree() > 20),
+            elevator.setheight(0)
+        );
+
+        barge = Commands.sequence(
+            elevator.setheight(1430),
+            new WaitUntilCommand(() -> elevator.getheight() > 1000),
+            arm.setangle(-30)
+        );
+
+        home = Commands.sequence(
+            arm.setangle(40),
+            new WaitUntilCommand(() -> arm.getdegree() > 30),
+            elevator.setheight(30)
+            // arm.setangle(173)
+        );
+    }
+
+    public Command changestate(StateEnum state) {
+        return new InstantCommand(() -> {
+            this.curState = state;
+            SmartDashboard.putString("state", this.curState.toString());
+        });
+    }
+
+    // public Command buttonA() {
+    //     if (this.curState == StateEnum.NONE)
+    //         return algaeground.andThen(changestate(StateEnum.ALGAE));
+    //     else if (this.curState == StateEnum.ALGAE)
+    //         return processor;
+    //     else
+    //         return coralL1;
+    // }
+
+    // public Command buttonB() {
+    //     if (this.curState == StateEnum.NONE)
+    //         return algaeL2.andThen(changestate(StateEnum.ALGAE));
+    //     else if (this.curState == StateEnum.ALGAE)
+    //         return algaeL2;
+    //     else
+    //         return coralL2;
+    // }
+
+    // public Command buttonX() {
+    //     if (this.curState == StateEnum.NONE)
+    //         return algaeL3.andThen(changestate(StateEnum.ALGAE));
+    //     else if (this.curState == StateEnum.ALGAE)
+    //         return algaeL3;
+    //     else
+    //         return coralL3;
+    // }
+
+    // public Command buttonY() {
+    //     SmartDashboard.putString("state", curState.toString());
+    //     if (this.curState == StateEnum.ALGAE)
+    //         return this.barge;
+    //     else if (this.curState == StateEnum.CORAL)
+    //         return this.coralL4;
+    //     return Commands.none();
+    // }
+
+    // public Command lefttri() {
+    //     return this.home.andThen(changestate(StateEnum.NONE));
+    // }
+    
+    }
+    
+    // public Command changestate(StateEnum state)
+    // {
+    //     return new InstantCommand(() -> {
+    //         curState = state;
+    //     });
+    // }  
+    // public Command coralL1 = Commands.sequence(
+    //     arm.setangle(110),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(500)
+    // );
+
+    // public Command coralL2 = Commands.sequence(
+    //     arm.setangle(30),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(100)
+    // );
+
+    // public Command coralL3 = Commands.sequence(
+    //     arm.setangle(30),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(550)
+    // );
+
+    // public Command coralL4 = Commands.sequence(
+    //     arm.setangle(30),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(1170)
+    // );
+
+    // public Command algaeground = Commands.sequence(
+    //     arm.setangle(126),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(133)
+    // );
+
+    // public Command algaeL2 = Commands.sequence(
+    //     arm.setangle(85),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(430)
+    // );
+
+    // public Command algaeL3 = Commands.sequence(
+    //     arm.setangle(85),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(830)
+    // ); 
+
+    // public Command processor = Commands.sequence(
+    //     arm.setangle(85),
+    //     new WaitUntilCommand(() -> arm.getdegree()>20),
+    //     elevator.setheight(0)
+    // );
+
+    // public Command barge = Commands.sequence(
+    //     elevator.setheight(1430),
+    //     new WaitUntilCommand(() -> elevator.getheight()>1000),
+    //     arm.setangle(-30)
+    // );
+
+    // public Command home = Commands.sequence(
+    //     arm.setangle(40),
+    //     new WaitUntilCommand(() -> arm.getdegree()>30),
+    //     elevator.setheight(245),
+    //     arm.setangle(175)
+    // );
+    // public Command buttonA()
+    // {
+    //     if(curState == StateEnum.NONE) return algaeground.andThen(changestate(StateEnum.ALGAE));
+    //     else if(curState == StateEnum.ALGAE) return processor;
+    //     else return coralL1;
+    // }
+    // public Command buttonB()
+    // {
+    //     if(curState == StateEnum.NONE) return algaeL2.andThen(changestate(StateEnum.ALGAE));
+    //     else if(curState == StateEnum.ALGAE) return algaeL2;
+    //     else return coralL2;
+    // }
+    // public Command buttonX()
+    // {
+    //     if(curState == StateEnum.NONE) return algaeL3.andThen(changestate(StateEnum.ALGAE));
+    //     else if(curState == StateEnum.ALGAE) return algaeL3;
+    //     else return coralL3;
+    // }
+    // public Command buttonY()
+    // {
+    //     if(curState == StateEnum.ALGAE) return barge;
+    //     else if(curState == StateEnum.CORAL) return coralL4;
+    //     return Commands.none();
+    // }
+    // public Command lefttri()
+    // {
+    //     return home.andThen(changestate(StateEnum.NONE));
+    // }
+
