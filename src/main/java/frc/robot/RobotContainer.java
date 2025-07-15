@@ -115,18 +115,30 @@ public class RobotContainer {
             ));
         joystick.povLeft().whileTrue(intakeSubsystem.intakeManual(-0.6));
         joystick.povRight().whileTrue(intakeSubsystem.intakeManual(1.0));
-        joystick.povUp().onTrue(macro.loading.andThen(macro.changestate(StateEnum.CORAL)));
+        joystick.povDown().onTrue(new SelectCommand<StateEnum>(
+            Map.of(
+                StateEnum.NONE, macro.loading.andThen(macro.changestate(StateEnum.CORAL)),
+                StateEnum.ALGAE, Commands.none(),
+                StateEnum.CORAL, Commands.none()
+                ),
+                 ()->macro.curState
+                ));
         joystick.leftTrigger().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
-        joystick.rightTrigger().onTrue(armSubsystem.setangle(70)).onFalse(armSubsystem.setangle(30));
-        // joystick.leftTrigger().onTrue(macro.elepidtune.andThen(macro.changestate(StateEnum.NONE)));
-        // joystick.rightBumper().onTrue(macro.autonscore);
+        joystick.rightTrigger().onTrue(new SelectCommand<StateEnum>(
+            Map.of(
+                StateEnum.NONE, Commands.none(),
+                StateEnum.ALGAE, Commands.none(),
+                StateEnum.CORAL, armSubsystem.setangle(70)
+                ),
+                 ()->macro.curState
+                )).onFalse(armSubsystem.setangle(30));
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-(joystick.getLeftY()*0.7) * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-(joystick.getLeftX()*0.7) * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityX(-(joystick.getLeftY()*(Math.abs(elevatorSubsystem.speed))) * (Math.abs(MaxSpeed))) // Drive forward with negative Y (forward)
+                    .withVelocityY(-(joystick.getLeftX()*(Math.abs(elevatorSubsystem.speed)) * (Math.abs(MaxSpeed)))) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -160,8 +172,10 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
 
+
+
         //***** */
-        joystick.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.button(7).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

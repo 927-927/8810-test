@@ -23,6 +23,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     private final BaseStatusSignal positionSignal;
     private double setpoint;
+    public double speed = 1;
     
     public ElevatorSubsystem(CANBus CAN,double curlimit,double setpoint)
     {
@@ -126,6 +127,13 @@ public class ElevatorSubsystem extends SubsystemBase{
     public void periodic()
     {
         BaseStatusSignal.refreshAll(positionSignal);
+        if(this.getheight()>=500)
+        {
+            this.speed = 0.3;
+        }
+        else{
+            this.speed = 1;
+        }
         SmartDashboard.putNumber("elevator rotation", this.getencoderval());
         SmartDashboard.putNumber("elevator height", this.getheight());
     }

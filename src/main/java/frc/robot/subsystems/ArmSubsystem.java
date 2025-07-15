@@ -27,7 +27,6 @@ public class ArmSubsystem extends SubsystemBase{
     final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
     private double setpoint;
     private BaseStatusSignal statorcurrent;
-    public double speed = 1;
     private final BaseStatusSignal positionSignal;
     LinearFilter filter = LinearFilter.movingAverage(4);
     private MotorOutputConfigs armconfig = new MotorOutputConfigs();
@@ -111,36 +110,12 @@ public class ArmSubsystem extends SubsystemBase{
 
 
 
-    public Command changespeed()
-    {
-        return new InstantCommand(() -> {
-        if (speed == 1) {
-            speed = 0.3;
-        } else {
-            speed = 1;
-        }
-        });
-    }
-
-    public boolean state()
-    {
-        if(this.getdegree()>=30)
-        {
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-
     //periodic
     @Override
     public void periodic()
     {
         BaseStatusSignal.refreshAll(positionSignal,statorcurrent);
         SmartDashboard.putNumber("arm angle", this.getdegree());
-        SmartDashboard.putNumber("speed", speed);
         SmartDashboard.putNumber("arm stator current", filter.calculate(statorcurrent.getValueAsDouble()));
     }
 }

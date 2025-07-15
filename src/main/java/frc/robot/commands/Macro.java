@@ -93,6 +93,8 @@ public class Macro {
         );
 
         homelarger30 = Commands.sequence(
+            intake.intakedirect(1.0),
+            new WaitCommand(0.2),
             elevator.setheight(250),
             new WaitUntilCommand(() -> elevator.getheight() > 150),
             arm.setangle(180.5),
@@ -100,6 +102,8 @@ public class Macro {
         );
 
         homesmaller30 = Commands.sequence(
+            intake.intakedirect(1.0),
+            new WaitCommand(0.2),
             arm.setangle(40),
             new WaitUntilCommand(() -> arm.getdegree() > 30),
             elevator.setheight(250),
