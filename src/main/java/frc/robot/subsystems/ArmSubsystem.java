@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,8 +26,10 @@ public class ArmSubsystem extends SubsystemBase{
     private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
     private double setpoint;
+    private BaseStatusSignal statorcurrent;
     public double speed = 1;
     private final BaseStatusSignal positionSignal;
+    LinearFilter filter = LinearFilter.movingAverage(4);
     private MotorOutputConfigs armconfig = new MotorOutputConfigs();
     public ArmSubsystem(CANBus canBus,double setpoint) {
         this.armmotor = new TalonFX(20,canBus);
@@ -40,6 +43,7 @@ public class ArmSubsystem extends SubsystemBase{
         armslot0.kP = 0.6;
         armslot0.kI = 0.1;
         armslot0.kD = 0.0;
+        statorcurrent = armmotor.getStatorCurrent();
         armmotor.getConfigurator().apply(armslot0);
         armmotor.setControl(armcontrol);
         armmotor.setNeutralMode(NeutralModeValue.Brake);
@@ -118,15 +122,26 @@ public class ArmSubsystem extends SubsystemBase{
         });
     }
 
+    public boolean state()
+    {
+        if(this.getdegree()>=30)
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 
     //periodic
     @Override
     public void periodic()
     {
-        BaseStatusSignal.refreshAll(positionSignal);
+        BaseStatusSignal.refreshAll(positionSignal,statorcurrent);
         SmartDashboard.putNumber("arm angle", this.getdegree());
         SmartDashboard.putNumber("speed", speed);
+        SmartDashboard.putNumber("arm stator current", filter.calculate(statorcurrent.getValueAsDouble()));
     }
 }
 

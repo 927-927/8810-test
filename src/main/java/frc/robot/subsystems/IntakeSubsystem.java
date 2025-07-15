@@ -57,8 +57,5 @@ public class IntakeSubsystem extends SubsystemBase{
     public void periodic()
     {
         BaseStatusSignal.refreshAll(currentsupply,statorcurrentsupply);
-        SmartDashboard.putNumber("intake current", currentsupply.getValueAsDouble());
-        SmartDashboard.putNumber("filtered intake current", filter.calculate(currentsupply.getValueAsDouble()));
-        SmartDashboard.putNumber("intake stator current", statorcurrentsupply.getValueAsDouble());
     }
 }

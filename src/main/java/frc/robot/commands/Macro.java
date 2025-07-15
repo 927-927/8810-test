@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.enums.StateEnum;
 import frc.robot.subsystems.*;
@@ -26,8 +28,10 @@ public class Macro {
     private IntakeSubsystem intake;
     public StateEnum curState = StateEnum.NONE;
     public Command coralL1, coralL2, coralL3, coralL4;
-    public Command algaeground, algaeL2, algaeL3, processor, barge, home;
+    public Command algaeground, algaeL2, algaeL3, processor, barge, homelarger30,homesmaller30,home,algaehold,algaehold1;
     public Command elepidtune;
+    public Command autonscore;
+    public Command loading;
     public Macro(ElevatorSubsystem elevatorSubsystem,ArmSubsystem armSubsystem,IntakeSubsystem intakeSubsystem)
     {
         this.elevator = elevatorSubsystem;
@@ -88,11 +92,32 @@ public class Macro {
             arm.setangle(-30)
         );
 
-        home = Commands.sequence(
+        homelarger30 = Commands.sequence(
+            elevator.setheight(250),
+            new WaitUntilCommand(() -> elevator.getheight() > 150),
+            arm.setangle(179),
+            intake.intakedirect(-0.05)
+        );
+
+        homesmaller30 = Commands.sequence(
             arm.setangle(40),
             new WaitUntilCommand(() -> arm.getdegree() > 30),
+            elevator.setheight(250),
+            new WaitUntilCommand(() -> elevator.getheight() > 150),
+            arm.setangle(179),
+            intake.intakedirect(-0.05)
+        );
+
+        home = new ConditionalCommand(homelarger30, homesmaller30,() -> arm.getdegree()>30);
+
+        algaehold = Commands.sequence(
+            arm.setangle(30),
             elevator.setheight(30)
-            // arm.setangle(173)
+        );
+
+        algaehold1 = Commands.sequence(
+            arm.setangle(30),
+            elevator.setheight(30)
         );
 
         elepidtune = Commands.sequence(
@@ -100,6 +125,17 @@ public class Macro {
             new WaitUntilCommand(() -> elevator.getheight() < 100),
             arm.setangle(5)
         );
+
+        autonscore = Commands.sequence(
+            elevator.setheight(1200),
+            new WaitUntilCommand(() -> elevator.getheight()>1150),
+            arm.setangle(67),
+            new WaitUntilCommand(() -> arm.getdegree()>63),
+            intakeSubsystem.intakedirect(0.5)
+        );
+
+
+
     }
 
     public Command changestate(StateEnum state) {

@@ -90,14 +90,14 @@ public class RobotContainer {
         joystick.b().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, macro.algaeL2.andThen(macro.changestate(StateEnum.ALGAE)),
-            StateEnum.ALGAE, Commands.none()
+            StateEnum.ALGAE, macro.algaehold
             ),
             () -> macro.curState
             ));
         joystick.x().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, macro.algaeL3.andThen(macro.changestate(StateEnum.ALGAE)),
-            StateEnum.ALGAE, Commands.none()
+            StateEnum.ALGAE, macro.algaehold1
             ),
             () -> macro.curState
             ));
@@ -110,14 +110,10 @@ public class RobotContainer {
             ));
         joystick.povLeft().whileTrue(intakeSubsystem.intakeManual(-0.6));
         joystick.povRight().whileTrue(intakeSubsystem.intakeManual(1.0));
+        
         joystick.leftBumper().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
         joystick.leftTrigger().onTrue(macro.elepidtune.andThen(macro.changestate(StateEnum.NONE)));
-
-
-
-
-
-
+        // joystick.rightBumper().onTrue(macro.autonscore);
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(

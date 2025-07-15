@@ -19,7 +19,6 @@ public class ElevatorSubsystem extends SubsystemBase{
     private final TalonFX elemotor1;
     private final TalonFX elemotor2;
     private final double dia = 38.2*Math.PI;
-    private CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
     private DutyCycleOut elecontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
     private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
     private final BaseStatusSignal positionSignal;
