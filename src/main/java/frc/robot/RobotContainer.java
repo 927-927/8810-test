@@ -13,6 +13,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -46,14 +47,9 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController joystick = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Macro macro = new Macro(elevatorSubsystem,armSubsystem,intakeSubsystem);
@@ -64,17 +60,16 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();
         // Warmup PathPlanner to avoid Java pauses
+        // NamedCommands.registerCommand("score", macro.algaeL3);
         FollowPathCommand.warmupCommand().schedule();
         CommandScheduler.getInstance().setDefaultCommand(elevatorSubsystem,elevatorSubsystem.elevatorPID());
         CommandScheduler.getInstance().setDefaultCommand(armSubsystem, armSubsystem.armPID());
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
-        
     }
 
     private void configureBindings() {
