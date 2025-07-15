@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.Thread.State;
 import java.util.Map;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -83,44 +84,49 @@ public class RobotContainer {
         joystick.a().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, macro.algaeground.andThen(macro.changestate(StateEnum.ALGAE)),
-            StateEnum.ALGAE, macro.processor
+            StateEnum.ALGAE, macro.processor,
+            StateEnum.CORAL, macro.coralL1
             ),
             () -> macro.curState
             ));
         joystick.b().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, macro.algaeL2.andThen(macro.changestate(StateEnum.ALGAE)),
-            StateEnum.ALGAE, macro.algaehold
+            StateEnum.ALGAE, macro.algaehold,
+            StateEnum.CORAL, macro.coralL2
             ),
             () -> macro.curState
             ));
         joystick.x().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, macro.algaeL3.andThen(macro.changestate(StateEnum.ALGAE)),
-            StateEnum.ALGAE, macro.algaehold1
+            StateEnum.ALGAE, macro.algaehold1,
+            StateEnum.CORAL, macro.coralL3
             ),
             () -> macro.curState
             ));
         joystick.y().onTrue(new SelectCommand<StateEnum>(
             Map.of(
             StateEnum.NONE, Commands.none(),
-            StateEnum.ALGAE, macro.barge
+            StateEnum.ALGAE, macro.barge,
+            StateEnum.CORAL, macro.coralL4
             ),
             () -> macro.curState
             ));
         joystick.povLeft().whileTrue(intakeSubsystem.intakeManual(-0.6));
         joystick.povRight().whileTrue(intakeSubsystem.intakeManual(1.0));
-        
-        joystick.leftBumper().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
-        joystick.leftTrigger().onTrue(macro.elepidtune.andThen(macro.changestate(StateEnum.NONE)));
+        joystick.povUp().onTrue(macro.loading.andThen(macro.changestate(StateEnum.CORAL)));
+        joystick.leftTrigger().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
+        joystick.rightTrigger().onTrue(armSubsystem.setangle(70)).onFalse(armSubsystem.setangle(30));
+        // joystick.leftTrigger().onTrue(macro.elepidtune.andThen(macro.changestate(StateEnum.NONE)));
         // joystick.rightBumper().onTrue(macro.autonscore);
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-(joystick.getLeftY()*0.3) * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-(joystick.getLeftX()*0.3) * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityX(-(joystick.getLeftY()*0.7) * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-(joystick.getLeftX()*0.7) * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );

@@ -51,13 +51,13 @@ public class Macro {
         );
 
         coralL3 = Commands.sequence(
-            arm.setangle(30),
+            arm.setangle(35),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(550)
+            elevator.setheight(520)
         );
 
         coralL4 = Commands.sequence(
-            arm.setangle(30),
+            arm.setangle(35),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
             elevator.setheight(1170)
         );
@@ -95,7 +95,7 @@ public class Macro {
         homelarger30 = Commands.sequence(
             elevator.setheight(250),
             new WaitUntilCommand(() -> elevator.getheight() > 150),
-            arm.setangle(179),
+            arm.setangle(180.5),
             intake.intakedirect(-0.05)
         );
 
@@ -104,11 +104,19 @@ public class Macro {
             new WaitUntilCommand(() -> arm.getdegree() > 30),
             elevator.setheight(250),
             new WaitUntilCommand(() -> elevator.getheight() > 150),
-            arm.setangle(179),
+            arm.setangle(180.5),
             intake.intakedirect(-0.05)
         );
 
         home = new ConditionalCommand(homelarger30, homesmaller30,() -> arm.getdegree()>30);
+
+        loading = Commands.sequence(
+          intake.intakedirect(-1.0),
+          elevator.setheight(140),
+          new WaitUntilCommand(() -> elevator.getheight() < 160),
+          intake.intakedirect(-0.015),
+          elevator.setheight(350)
+        );
 
         algaehold = Commands.sequence(
             arm.setangle(30),
