@@ -127,7 +127,7 @@ public class ElevatorSubsystem extends SubsystemBase{
     public void periodic()
     {
         BaseStatusSignal.refreshAll(positionSignal);
-        if(this.getheight()>=500)
+        if(this.getheight()>=510)
         {
             this.speed = 0.3;
         }

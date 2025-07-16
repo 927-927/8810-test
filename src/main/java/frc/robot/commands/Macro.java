@@ -45,21 +45,21 @@ public class Macro {
         );
 
         coralL2 = Commands.sequence(
-            arm.setangle(30),
+            arm.setangle(31),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
             elevator.setheight(100)
         );
 
         coralL3 = Commands.sequence(
-            arm.setangle(35),
+            arm.setangle(36),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
             elevator.setheight(520)
         );
 
         coralL4 = Commands.sequence(
-            arm.setangle(35),
+            arm.setangle(45),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(1170)
+            elevator.setheight(1200)
         );
 
         algaeground = Commands.sequence(
@@ -71,13 +71,13 @@ public class Macro {
         algaeL2 = Commands.sequence(
             arm.setangle(85),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(430)
+            elevator.setheight(360)
         );
 
         algaeL3 = Commands.sequence(
             arm.setangle(85),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(830)
+            elevator.setheight(790)
         );
 
         processor = Commands.sequence(

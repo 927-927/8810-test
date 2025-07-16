@@ -14,6 +14,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -45,7 +46,7 @@ public class RobotContainer {
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(TunerConstants.kCANBus);
     private final Candle rGBCandle = new Candle(0);
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.015).withRotationalDeadband(MaxAngularRate * 0.015) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -75,6 +76,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().setDefaultCommand(armSubsystem, armSubsystem.armPID());
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
+        NamedCommands.registerCommand("score", macro.autonscore);
         
     }
 
