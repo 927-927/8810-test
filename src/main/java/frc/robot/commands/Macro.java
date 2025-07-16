@@ -156,7 +156,4 @@ public class Macro {
             SmartDashboard.putString("state", this.curState.toString());
         });
     }
-
-
-    
 }
