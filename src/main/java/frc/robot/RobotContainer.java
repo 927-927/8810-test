@@ -84,7 +84,6 @@ public class RobotContainer {
         CommandScheduler.getInstance().setDefaultCommand(armSubsystem, armSubsystem.armPID());
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
-        NamedCommands.registerCommand("score", macro.autonscore);
         
     }
 
