@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.enums.CoralState;
 import frc.robot.enums.StateEnum;
+import frc.robot.enums.CoralState;
 import frc.robot.subsystems.*;
 public class Macro {
     //teleop key binding
@@ -27,6 +28,7 @@ public class Macro {
     private ArmSubsystem arm;
     private IntakeSubsystem intake;
     public StateEnum curState = StateEnum.NONE;
+    public CoralState curcoralState = CoralState.NONE;
     public Command coralL1, coralL2, coralL3, coralL4;
     public Command algaeground, algaeL2, algaeL3, processor, barge, homelarger30,homesmaller30,home,algaehold,algaehold1;
     public Command elepidtune;
@@ -39,15 +41,15 @@ public class Macro {
         this.intake = intakeSubsystem;
 
         coralL1 = Commands.sequence(
-            arm.setangle(110),
+            arm.setangle(102),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(500)
+            elevator.setheight(370)
         );
 
         coralL2 = Commands.sequence(
             arm.setangle(31),
             new WaitUntilCommand(() -> arm.getdegree() > 20),
-            elevator.setheight(100)
+            elevator.setheight(80)
         );
 
         coralL3 = Commands.sequence(
@@ -95,7 +97,7 @@ public class Macro {
         homelarger30 = Commands.sequence(
             intake.intakedirect(1.0),
             new WaitCommand(0.2),
-            elevator.setheight(250),
+            elevator.setheight(254),
             new WaitUntilCommand(() -> elevator.getheight() > 150),
             arm.setangle(180.5),
             intake.intakedirect(-0.05)
@@ -106,7 +108,7 @@ public class Macro {
             new WaitCommand(0.2),
             arm.setangle(40),
             new WaitUntilCommand(() -> arm.getdegree() > 30),
-            elevator.setheight(250),
+            elevator.setheight(254),
             new WaitUntilCommand(() -> elevator.getheight() > 150),
             arm.setangle(180.5),
             intake.intakedirect(-0.05)
@@ -156,6 +158,14 @@ public class Macro {
             SmartDashboard.putString("state", this.curState.toString());
         });
     }
+
+    public Command changecoralstate(CoralState state) {
+        return new InstantCommand(() -> {
+            this.curcoralState = state;
+            SmartDashboard.putString("coral state", this.curcoralState.toString());
+        });
+    }
+
 
 
     
