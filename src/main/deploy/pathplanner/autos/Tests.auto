@@ -17,9 +17,21 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "step2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prompt"
           }
         },
         {
@@ -32,6 +44,12 @@
           "type": "named",
           "data": {
             "name": "load"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "restoreprompt"
           }
         },
         {
@@ -47,9 +65,21 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "step4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prompt"
           }
         },
         {
@@ -62,6 +92,12 @@
           "type": "named",
           "data": {
             "name": "load"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "restoreprompt"
           }
         },
         {

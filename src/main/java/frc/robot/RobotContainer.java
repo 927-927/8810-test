@@ -51,7 +51,7 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(1);
+    private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Macro macro = new Macro(elevatorSubsystem,armSubsystem,intakeSubsystem);
@@ -67,6 +67,13 @@ public class RobotContainer {
         commands.put("home", macro.home);
         commands.put("expand", macro.holdingposition);
         commands.put("flip", macro.score);
+        commands.put("load", macro.loading);
+        commands.put("prompt", Commands.runOnce(() -> {
+            rGBCandle.setColor(rGBCandle.ColorGenerate(0, 7, "#63d481"));
+        }));
+        commands.put("restoreprompt", Commands.runOnce(() -> {
+            rGBCandle.setColor(rGBCandle.ColorGenerate(0, 7, "#bf005f"));
+        }));
         NamedCommands.registerCommands(commands);
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
