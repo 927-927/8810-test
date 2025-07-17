@@ -32,22 +32,29 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Candle;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import  frc.robot.commands.Macro;
+import frc.robot.enums.CoralState;
 import frc.robot.enums.StateEnum;
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
+    //subsystem initialize
     private final ArmSubsystem armSubsystem = new ArmSubsystem(TunerConstants.kCANBus,30.0);
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(TunerConstants.kCANBus, 5,0.0);
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(TunerConstants.kCANBus);
     private final Candle rGBCandle = new Candle(0);
+    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem(TunerConstants.kCANBus);
+
+
+
+    
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.015).withRotationalDeadband(MaxAngularRate * 0.015) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -94,7 +101,7 @@ public class RobotContainer {
             Map.of(
             StateEnum.NONE, macro.algaeground.andThen(macro.changestate(StateEnum.ALGAE)),
             StateEnum.ALGAE, macro.processor,
-            StateEnum.CORAL, macro.coralL1
+            StateEnum.CORAL, macro.coralL1.andThen(macro.changecoralstate(CoralState.L1))
             ),
             () -> macro.curState
             ));
@@ -102,7 +109,7 @@ public class RobotContainer {
             Map.of(
             StateEnum.NONE, macro.algaeL2.andThen(macro.changestate(StateEnum.ALGAE)),
             StateEnum.ALGAE, macro.algaehold,
-            StateEnum.CORAL, macro.coralL2
+            StateEnum.CORAL, macro.coralL2.andThen(macro.changecoralstate(CoralState.L2))
             ),
             () -> macro.curState
             ));
@@ -110,7 +117,7 @@ public class RobotContainer {
             Map.of(
             StateEnum.NONE, macro.algaeL3.andThen(macro.changestate(StateEnum.ALGAE)),
             StateEnum.ALGAE, macro.algaehold1,
-            StateEnum.CORAL, macro.coralL3
+            StateEnum.CORAL, macro.coralL3.andThen(macro.changecoralstate(CoralState.L3))
             ),
             () -> macro.curState
             ));
@@ -118,7 +125,7 @@ public class RobotContainer {
             Map.of(
             StateEnum.NONE, Commands.none(),
             StateEnum.ALGAE, macro.barge,
-            StateEnum.CORAL, macro.coralL4
+            StateEnum.CORAL, macro.coralL4.andThen(macro.changecoralstate(CoralState.L4))
             ),
             () -> macro.curState
             ));
@@ -132,15 +139,40 @@ public class RobotContainer {
                 ),
                  ()->macro.curState
                 ));
-        joystick.leftTrigger().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home));
+        joystick.leftTrigger().onTrue(macro.changestate(StateEnum.NONE).andThen(macro.home).andThen(macro.changecoralstate(CoralState.NONE)));
         joystick.rightTrigger().onTrue(new SelectCommand<StateEnum>(
             Map.of(
                 StateEnum.NONE, Commands.none(),
                 StateEnum.ALGAE, Commands.none(),
-                StateEnum.CORAL, armSubsystem.setangle(70)
-                ),
+                StateEnum.CORAL, new SelectCommand<CoralState>(
+                    Map.of(
+                        CoralState.L1,Commands.none(),
+                        CoralState.L2, armSubsystem.setangle(70
+                        ),
+                        CoralState.L3,armSubsystem.setangle(70),
+                        CoralState.L4,armSubsystem.setangle(80)
+                    ),                    
+                     () -> macro.curcoralState)
+                     ),
                  ()->macro.curState
-                )).onFalse(armSubsystem.setangle(30));
+                )).onFalse(new SelectCommand<StateEnum>(
+                Map.of(
+                    StateEnum.NONE, Commands.none(),
+                    StateEnum.ALGAE, Commands.none(),
+                    StateEnum.CORAL, new SelectCommand<CoralState>(
+                        Map.of(
+                            CoralState.L1,Commands.none(),
+                            CoralState.L2, armSubsystem.setangle(31),
+                            CoralState.L3,armSubsystem.setangle(36),
+                            CoralState.L4,armSubsystem.setangle(45)
+                        ),                    
+                            () -> macro.curcoralState)
+                            ),
+                        ()->macro.curState
+                    ));
+
+        joystick.leftBumper().whileTrue(climberSubsystem.climbup());
+        joystick.rightBumper().whileTrue(climberSubsystem.climbdown());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(

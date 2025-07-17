@@ -24,7 +24,7 @@ public class ArmSubsystem extends SubsystemBase{
     private final TalonFX armmotor;
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs();
     private PositionVoltage request = new PositionVoltage(0).withSlot(0).withOverrideBrakeDurNeutral(true);
-    final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
+    private final DutyCycleOut armcontrol = new DutyCycleOut(0.0).withOverrideBrakeDurNeutral(true);
     private double setpoint;
     private BaseStatusSignal statorcurrent;
     private final BaseStatusSignal positionSignal;
