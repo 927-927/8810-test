@@ -11,6 +11,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX intakeMotor;
@@ -48,6 +49,14 @@ public class IntakeSubsystem extends SubsystemBase{
         return this.runOnce(
             () -> setV(voltage)
         );
+    }
+    public Command intakeTimed(double voltage, double time)
+    {
+        return this.runOnce(() -> {
+            this.intakedirect(voltage);
+            WaitCommand wait = new WaitCommand(1);
+            wait.andThen(this.intakedirect(-0.05));
+        });
     }
     public double supplycurrent()
     {

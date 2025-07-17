@@ -7,25 +7,109 @@
         {
           "type": "path",
           "data": {
-            "pathName": "straight"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
+            "pathName": "step1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "465"
+            "name": "score"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "step2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prompt"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "load"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "restoreprompt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "flip"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prompt"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "load"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "restoreprompt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "flip"
           }
         }
       ]

@@ -7,7 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import java.lang.Thread.State;
-import java.rmi.dgc.VMID;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -56,11 +56,6 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.015).withRotationalDeadband(MaxAngularRate * 0.015) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -74,17 +69,29 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        
+        Map<String, Command> commands = new HashMap<>();
+        commands.put("score", macro.autonscore);
+        commands.put("home", macro.home);
+        commands.put("expand", macro.holdingposition);
+        commands.put("flip", macro.score);
+        commands.put("load", macro.loading);
+        commands.put("prompt", Commands.runOnce(() -> {
+            rGBCandle.setColor(rGBCandle.ColorGenerate(0, 7, "#63d481"));
+        }));
+        commands.put("restoreprompt", Commands.runOnce(() -> {
+            rGBCandle.setColor(rGBCandle.ColorGenerate(0, 7, "#bf005f"));
+        }));
+        NamedCommands.registerCommands(commands);
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();
         // Warmup PathPlanner to avoid Java pauses
+        // NamedCommands.registerCommand("score", macro.algaeL3);
         FollowPathCommand.warmupCommand().schedule();
         CommandScheduler.getInstance().setDefaultCommand(elevatorSubsystem,elevatorSubsystem.elevatorPID());
         CommandScheduler.getInstance().setDefaultCommand(armSubsystem, armSubsystem.armPID());
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
-        
     }
 
     private void configureBindings() {
