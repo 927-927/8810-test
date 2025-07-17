@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import java.lang.Thread.State;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -61,6 +62,12 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+        Map<String, Command> commands = new HashMap<>();
+        commands.put("score", macro.autonscore);
+        commands.put("home", macro.home);
+        commands.put("expand", macro.holdingposition);
+        commands.put("flip", macro.score);
+        NamedCommands.registerCommands(commands);
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();

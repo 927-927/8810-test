@@ -17,12 +17,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "step2"
@@ -31,13 +25,55 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "load"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "step3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "flip"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "load"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "flip"
           }
         }
       ]

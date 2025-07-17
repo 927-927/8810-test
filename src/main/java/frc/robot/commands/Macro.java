@@ -30,7 +30,7 @@ public class Macro {
     public Command coralL1, coralL2, coralL3, coralL4;
     public Command algaeground, algaeL2, algaeL3, processor, barge, homelarger30,homesmaller30,home,algaehold,algaehold1;
     public Command elepidtune;
-    public Command autonscore;
+    public Command autonscore,holdingposition,score;
     public Command loading;
     public Macro(ElevatorSubsystem elevatorSubsystem,ArmSubsystem armSubsystem,IntakeSubsystem intakeSubsystem)
     {
@@ -146,6 +146,17 @@ public class Macro {
             intakeSubsystem.intakedirect(0.5)
         );
 
+        holdingposition = Commands.sequence(
+            elevator.setheight(1200),
+            new WaitUntilCommand(() -> elevator.getheight()>700),
+            arm.setangle(30)
+        );
+
+        score = Commands.sequence(
+            arm.setangle(67),
+            new WaitUntilCommand(() -> arm.getdegree()>63),
+            intakeSubsystem.intakedirect(0.5)
+        );
 
 
     }
