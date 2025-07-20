@@ -70,6 +70,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         Map<String, Command> commands = new HashMap<>();
+        commands.put("setangle", Commands.runOnce(() -> {
+            armSubsystem.setangle(30.0);
+        }));
         commands.put("score", macro.autonscore);
         commands.put("home", macro.home);
         commands.put("expand", macro.holdingposition);
@@ -82,7 +85,7 @@ public class RobotContainer {
             rGBCandle.setColor(rGBCandle.ColorGenerate(0, 7, "#bf005f"));
         }));
         NamedCommands.registerCommands(commands);
-        autoChooser = AutoBuilder.buildAutoChooser("Tests");
+        autoChooser = AutoBuilder.buildAutoChooser("New Auto");
         SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();
         // Warmup PathPlanner to avoid Java pauses

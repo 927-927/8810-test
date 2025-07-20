@@ -156,7 +156,7 @@ public class Macro {
 
         score = Commands.sequence(
             arm.setangle(67),
-            new WaitUntilCommand(() -> arm.getdegree()>63),
+            new WaitUntilCommand(() -> arm.getdegree()>50),
             intakeSubsystem.intakedirect(0.5)
         );
 
