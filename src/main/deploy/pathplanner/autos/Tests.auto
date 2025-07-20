@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "setangle"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "step1"
@@ -110,6 +116,12 @@
           "type": "named",
           "data": {
             "name": "flip"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "step6"
           }
         }
       ]
